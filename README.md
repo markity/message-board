@@ -94,7 +94,7 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64U
 
 **实现方面**
 
-使用中间件进行JWT鉴权, 如果在项目目录下找不到证书, 那么在服务器启动时自动签发. 鉴权时, 首先用私钥解密, 验证header和payload是否一致, 如果能解开, 说明JWT鉴权成功, 如果失败, 删除cookie
+使用中间件进行JWT鉴权, 每次开启服务器时调用系统随机数接口随机密钥. 鉴权时, 首先用私钥解密, 验证header和payload是否一致, 如果能解开, 说明JWT鉴权成功, 如果失败, 删除cookie, 返回响应错误码
 
 ### 数据表设计
 
