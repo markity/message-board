@@ -1,4 +1,4 @@
-package util
+package jwt
 
 // 这个文件用于声明为jwt实现的加密方法, 目前只实现了RSA-SHA256
 
