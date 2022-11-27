@@ -12,8 +12,13 @@
 - 支持对留言板消息或任意级子消息的点赞
 - 支持提交匿名消息或匿名评论
 - 支持管理员权限, 管理员允许删除任何留言或评论
-- JWT进行鉴权, 基于cookie实现JWT, 未登录的用户只能查看消息, 不能发送消息、评论或点赞
 - 完备的wechat风格错误码设计
+
+### 实现细节概述
+
+- 管理员只允许删除特定消息, 不允许修改, 防止管理员乱改消息, 引发舆论
+- JWT进行鉴权, 基于cookie实现JWT, 未登录的用户只能查看消息, 不能发送消息、评论或点赞
+- JWT签发使用RSA非对称加密, 证书签发工具已封装在util中
 
 ### 接口概述(共13个接口)
 
@@ -49,6 +54,8 @@
 
 ### JWT的实现细节概述
 
+**算法方面**
+
 ```plaintext
 # 描述JWT元数据的JSON对象
 header = {
@@ -63,11 +70,13 @@ header = {
 # 有效载荷部分
 payload = {
 # 到期时间时间戳
-exp: 1669513868
+exp: 1669513868,
 # jwt唯一ID, 为了保证每次生成的token都不一样而使用它
-jti: 1234
+jti: 1234,
 # 用户名, 指定一些接口操作的user对象
-userid: 1
+userid: 1,
+# 是否为管理员, 管理员有权限删除所有消息
+admin: false
 }
 
 ----------------------------------------------------------------------
@@ -83,15 +92,19 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + sign
 # 其实可以不用比对header和payload是否相同, 但为了更可靠, 选择了比对, 反正没啥损失
 ```
 
+**实现方面**
+
+使用中间件进行JWT鉴权, 如果在项目目录下找不到证书, 那么在服务器启动时自动签发. 鉴权时, 首先用私钥解密, 验证header和payload是否一致, 如果能解开, 说明JWT鉴权成功, 如果失败, 删除cookie
+
 ### 数据表设计
 
 **user**
 
-| 字段名 | id                          | username         | password_crypto | created_at                | personal_signature | deleted                   |
-| ------ | --------------------------- | ---------------- | --------------- | ------------------------- | ------------------ | ------------------------- |
-| 类型   | INT                         | VARCHAR(32)      | TINYBLOB        | DATETIME                  | VARCHAR(200)       | TINYINT                   |
-| 约束   | PRIMARY KEY, AUTO_INCREMENT | NOT NULL, UNIQUE | NOT NULL        | NOT NULL                  | NULL               | NOT NULL, DEFAULT 0       |
-| 说明   | 主键                        | 用户名, 唯一     | 加密后的密码    | 如果该条目被删除, 被置为1 | 用户的创建日期     | 如果该条目被删除, 被置为1 |
+| 字段名 | id                          | username         | password_crypto | created_at                | personal_signature | admin                         | deleted                   |
+| ------ | --------------------------- | ---------------- | --------------- | ------------------------- | ------------------ | ----------------------------- | ------------------------- |
+| 类型   | INT                         | VARCHAR(32)      | TINYBLOB        | DATETIME                  | VARCHAR(200)       | TINYINT                       | TINYINT                   |
+| 约束   | PRIMARY KEY, AUTO_INCREMENT | NOT NULL, UNIQUE | NOT NULL        | NOT NULL                  | NULL               | NOT NULL, DEFAULT 0           | NOT NULL, DEFAULT 0       |
+| 说明   | 主键                        | 用户名, 唯一     | 加密后的密码    | 如果该条目被删除, 被置为1 | 用户的创建日期     | 如果该条目为1, 那么他为管理员 | 如果该条目被删除, 被置为1 |
 
 一些说明:
 
