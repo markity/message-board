@@ -49,7 +49,7 @@
 
 ### JWT的实现细节概述
 
-```json
+```plaintext
 # 描述JWT元数据的JSON对象
 header = {
    # 算法, RSA 256
@@ -355,7 +355,7 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + sign
 
 commets例子:
 
-```json
+```plaintext
 [
   {
     comment_id: 1,
@@ -444,7 +444,7 @@ commets例子:
 
 comment示例:
 
-```json
+```plaintext
 {
   comment_id: 1,
   comment_content: "你好, 这是一条留言",
