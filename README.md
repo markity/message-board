@@ -110,6 +110,7 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64U
 
 - deleted字段在当前项目没有用到, 此项目不允许删除用户信息, 保留是为了表的一致性
 - 创建用户的时候会利用到UNIQUE的特性, 不采用查询后插入的方法, 而是直接插入, 如果错误码为1062(duplicate entry)那么就代表已经存在, 直接告知用户该用户名已被注册
+- 如果personal_signature为null, 那么代表此人没有个性签名
 
 **message**
 
