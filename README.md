@@ -18,7 +18,7 @@
 
 - 管理员只允许删除特定消息, 不允许修改, 防止管理员乱改消息, 引发舆论
 - JWT进行鉴权, 基于cookie实现JWT, 未登录的用户只能查看消息, 不能发送消息、评论或点赞
-- JWT签发使用RSA非对称加密, 证书签发工具已封装在util中
+- JWT签发使用RSA非对称加密, 每次启动服务器都会新随机一个RSA密钥
 
 ### 接口概述(共13个接口)
 
@@ -83,7 +83,7 @@ admin: false
 
 # 获得token(加密)
 sign = HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload),secret)
-token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + sign
+token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64UrlEncode(sign)
 
 -----------------------------------------------------------------------
 
@@ -211,10 +211,10 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + sign
 
 可能的错误代码:
 
-| 错误码 | 20000 | 20001                              | 20002                  | 20003                                                                                                      |
-| ------ | ----- | ---------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------- |
-| 说明   | 成功  | 服务暂时不可用                     | 鉴权失败, Token不合法  | 失败, 错误的入参参数, 在此接口中, <br />password不合法, 两次密码不同,<br /> put_type未知都被归结于这个错误 |
-| msg    | OK    | service not available temporarily | invalid identity token | invalid parameters                                                                                         |
+| 错误码 | 20000 | 20001                              | 20002                  | 20003                                                                                                     |
+| ------ | ----- | ---------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| 说明   | 成功  | 服务暂时不可用                     | 鉴权失败, Token不合法  | 失败, 错误的入参参数, 在此接口中,<br />password不合法, 两次密码不同,<br /> put_type未知都被归结于这个错误 |
+| msg    | OK    | service not available temporarily | invalid identity token | invalid parameters                                                                                        |
 
 **3. 修改个性签名**
 
