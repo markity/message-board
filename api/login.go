@@ -36,12 +36,14 @@ func Login(ctx *gin.Context) {
 	var userAdmin bool
 
 	ok = retry.RetryFrame(func() bool {
-		exist, id, admin, err := service.TryCheckLoginInfo(username, md5.ToMD5(password))
-		if err != nil {
+		// exist代表是否查询到 username = xxx, password = xxx的条目
+		// 如果查到, 就代表密码正确, 否则就返回用户账户或密码不正确
+		queryOK, passwordOK, id, admin := service.TryCheckLoginInfo(username, md5.ToMD5(password))
+		if !queryOK {
 			// 重试
 			return false
 		}
-		loginOK = exist
+		loginOK = passwordOK
 		userID = id
 		userAdmin = admin
 
