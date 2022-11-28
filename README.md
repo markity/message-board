@@ -319,10 +319,10 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64U
 
 可能的错误码:
 
-| 错误码 | 20000    | 20001                              | 20003                | 20501                      |
-| ------ | -------- | ---------------------------------- | -------------------- | -------------------------- |
-| 说明   | 登录成功 | 服务暂时不可用                     | 失败, 错误的入参参数 | 失败, 没有该用户或密码错误 |
-| msg    | OK       | service not available temporarily | invalid parameters   | login failed               |
+| 错误码 | 20000    | 20001                              | 20003                | 20501                                                 |
+| ------ | -------- | ---------------------------------- | -------------------- | ----------------------------------------------------- |
+| 说明   | 登录成功 | 服务暂时不可用                     | 失败, 错误的入参参数 | 失败, 没有该用户或密码错误                            |
+| msg    | OK       | service not available temporarily | invalid parameters   | login failed, check <br />password and username again |
 
 额外说明:
 
