@@ -7,4 +7,5 @@ func InitGroup(engine *gin.Engine) {
 	engine.PUT("/user", DispatchUserPut)
 	engine.POST("/user/auth", Login)
 	engine.DELETE("/user/auth", MiddleWareJWTVerify, Logout)
+	engine.GET("/user/info/:username", GetUserinfo)
 }
