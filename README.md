@@ -126,7 +126,7 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64U
 
 **thumb_message_user**
 
-这张表是用来维系点赞用户与消息的1对1关系的表, 用于实现一个用户仅能点赞一个评论一次的需求
+这张表是用来维系点赞用户与消息的一对多关系的表, 用于实现一个用户仅能点赞一个评论一次的需求
 
 | 字段名 | id                          | user_id  | message_id |
 | ------ | --------------------------- | -------- | ---------- |
@@ -319,10 +319,10 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64U
 
 可能的错误码:
 
-| 错误码 | 20000    | 20001                              | 20003                | 20501                                                 |
-| ------ | -------- | ---------------------------------- | -------------------- | ----------------------------------------------------- |
-| 说明   | 登录成功 | 服务暂时不可用                     | 失败, 错误的入参参数 | 失败, 没有该用户或密码错误                            |
-| msg    | OK       | service not available temporarily | invalid parameters   | login failed, check <br />password and username again |
+| 错误码 | 20000    | 20001                              | 20003                | 20501                                                |
+| ------ | -------- | ---------------------------------- | -------------------- | ---------------------------------------------------- |
+| 说明   | 登录成功 | 服务暂时不可用                     | 失败, 错误的入参参数 | 失败, 没有该用户或密码错误                           |
+| msg    | OK       | service not available temporarily | invalid parameters   | login failed, check<br />password and username again |
 
 额外说明:
 
