@@ -59,8 +59,8 @@ func Login(ctx *gin.Context) {
 	}
 
 	// 登录成功, 签发jwt
-	ctx.SetCookie("authtoken", JwtSignaturer.Signature(userID, userAdmin, time.Hour*2),
-		7200, "/", "localhost", false, false)
+	jwt := JwtSignaturer.Signature(userID, userAdmin, time.Hour*2)
+	ctx.SetCookie("authtoken", jwt, 7200, "/", "localhost", false, false)
 
 	service.UserLoginSuccess(ctx)
 }
