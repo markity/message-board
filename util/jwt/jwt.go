@@ -8,7 +8,13 @@ import (
 	"time"
 )
 
-func NewUserJWTSignaturer(cryptor Cryptor) *userJWTSignaturer {
+// JWT签名器, 提供签名, 验证解包操作
+type JWTSignaturer interface {
+	Signature(int64, bool, time.Duration) string
+	CheckAndUnpackPayload(string) (bool, *UserJWTPayloadForJson)
+}
+
+func NewUserJWTSignaturer(cryptor Cryptor) JWTSignaturer {
 	return &userJWTSignaturer{
 		jti:     0,
 		cryptor: cryptor,
@@ -22,13 +28,13 @@ type userJWTSignaturer struct {
 }
 
 // userJWTHeaderForJson 用于生成和解析json
-type userJWTHeaderForJson struct {
+type UserJWTHeaderForJson struct {
 	Algo string `json:"alg"`
 	Type string `json:"typ"`
 }
 
 // // userJWTPayloadForJson 用于生成和解析json
-type userJWTPayloadForJson struct {
+type UserJWTPayloadForJson struct {
 	UserID int64 `json:"userid"`
 	Admin  bool  `json:"admin"`
 	Expire int64 `json:"exp"`
@@ -36,14 +42,14 @@ type userJWTPayloadForJson struct {
 }
 
 func (a *userJWTSignaturer) Signature(userid int64, admin bool, duatrion time.Duration) string {
-	header_, _ := json.Marshal(userJWTHeaderForJson{
+	header_, _ := json.Marshal(UserJWTHeaderForJson{
 		Algo: string(a.cryptor.GetJWTType()),
 		Type: "JWT",
 	})
 	header := string(header_)
 
 	a.jtiLocker.Lock()
-	payload_, _ := json.Marshal(userJWTPayloadForJson{
+	payload_, _ := json.Marshal(UserJWTPayloadForJson{
 		UserID: userid,
 		Admin:  admin,
 		Expire: time.Now().Add(duatrion).Unix(),
@@ -61,35 +67,39 @@ func (a *userJWTSignaturer) Signature(userid int64, admin bool, duatrion time.Du
 	return headerBase64 + "." + payloadBase64 + "." + base64.StdEncoding.EncodeToString([]byte(signature))
 }
 
-func (a *userJWTSignaturer) Check(signature string) bool {
+func (a *userJWTSignaturer) CheckAndUnpackPayload(signature string) (bool, *UserJWTPayloadForJson) {
 	if strings.Count(signature, ".") != 2 || len(strings.Split(signature, ".")) != 3 {
-		return false
+		return false, nil
 	}
 
 	elements := strings.Split(signature, ".")
 
 	payload_, err := base64.StdEncoding.DecodeString(elements[1])
 	if err != nil {
-		return false
+		return false, nil
 	}
 
 	// 检查时间戳
-	var payload userJWTPayloadForJson
+	var payload UserJWTPayloadForJson
 	if err := json.Unmarshal(payload_, &payload); err != nil {
-		return false
+		return false, nil
 	}
 	if payload.Expire < time.Now().Unix() {
-		return false
+		return false, nil
 	}
 
 	b, err := base64.StdEncoding.DecodeString(elements[2])
 	if err != nil {
-		return false
+		return false, nil
 	}
 	de, ok := a.cryptor.Decrypt(b)
 	if !ok {
-		return false
+		return false, nil
 	}
 
-	return string(de) == elements[0]+"."+elements[1]
+	if string(de) != elements[0]+"."+elements[1] {
+		return false, nil
+	}
+
+	return true, &payload
 }
