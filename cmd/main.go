@@ -1,16 +1,15 @@
 package main
 
 import (
-	"message-board/service"
-	"message-board/util/jwt"
-	"time"
+	"message-board/api"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	jwtSignaturer := jwt.NewUserJWTSignaturer(jwt.NewRsaSHA256Cryptor())
-	sign := jwtSignaturer.Signature(10, true, time.Second)
-	// time.Sleep(time.Second * 3)
-	println(jwtSignaturer.Check(sign))
+	// service.MustPrepareTables()
+	engine := gin.Default()
+	api.InitGroup(engine)
 
-	service.MustPrepareTables()
+	engine.Run("127.0.0.1:8000")
 }

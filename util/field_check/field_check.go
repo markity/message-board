@@ -1,4 +1,4 @@
-package filedcheck
+package fieldcheck
 
 import (
 	"unicode"
@@ -37,8 +37,8 @@ func CheckMessageValid(content string) bool {
 	return nCount >= 10 && nCount <= 300
 }
 
-// 个性签名, 要求长度在[10, 150]之间
+// 个性签名, 要求长度在[0, 150]之间
 func CheckPersonalSignatureValid(sign string) bool {
 	nCount := utf8.RuneCountInString(sign)
-	return nCount >= 10 && nCount <= 150
+	return nCount <= 150
 }
