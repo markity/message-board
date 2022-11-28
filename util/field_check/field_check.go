@@ -31,10 +31,10 @@ func CheckPasswordValid(password string) bool {
 	return l >= 6 && l <= 25
 }
 
-// 消息, 要求长度在[10, 300]之间
+// 消息, 要求长度在[5, 300]之间
 func CheckMessageValid(content string) bool {
 	nCount := utf8.RuneCountInString(content)
-	return nCount >= 10 && nCount <= 300
+	return nCount >= 5 && nCount <= 300
 }
 
 // 个性签名, 要求长度在[0, 150]之间

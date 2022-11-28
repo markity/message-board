@@ -2,12 +2,13 @@ package main
 
 import (
 	"message-board/api"
+	"message-board/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// service.MustPrepareTables()
+	service.MustPrepareTables()
 	engine := gin.Default()
 	api.InitGroup(engine)
 

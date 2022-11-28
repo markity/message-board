@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS message(
 	sender_user_id 		INT NOT NULL,
 	parent_message_id	INT DEFAULT NULL,
 	thumbs_up			INT NOT NULL DEFAULT 0,
+	created_at 			DATETIME NOT NULL,
 	anonymous			TINYINT NOT NULL DEFAULT 0,
 	deleted				TINYINT NOT NULL DEFAULT 0
 ) COMMENT '消息表, 存储顶级留言以及子评论'
