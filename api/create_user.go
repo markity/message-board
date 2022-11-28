@@ -78,5 +78,4 @@ func CreateUser(ctx *gin.Context) {
 	} else {
 		service.CreateUserOK(ctx)
 	}
-	return
 }

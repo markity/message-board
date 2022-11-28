@@ -4,4 +4,5 @@ import "github.com/gin-gonic/gin"
 
 func InitGroup(engine *gin.Engine) {
 	engine.POST("/user", CreateUser)
+	engine.PUT("/user", DispatchUserPut)
 }
