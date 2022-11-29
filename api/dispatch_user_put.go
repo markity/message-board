@@ -68,8 +68,8 @@ func ChangePassword(ctx *gin.Context) {
 
 	// ok, 进行修改密码的数据库操作
 	ok = retry.RetryFrame(func() bool {
-		ok, err := service.TryChangePassword(ctxUser.UserID,
-			string(md5.ToMD5(oldPassword)), string(md5.ToMD5(password)))
+		ok, err := service.TryChangePassword(ctxUser.UserID, string(md5.ToMD5(oldPassword)),
+			string(md5.ToMD5(password)))
 		if err != nil {
 			log.Printf("failed to TryChangePassword in ChangePassword: %v\n", err)
 			return false
@@ -102,6 +102,7 @@ func ChangePassword(ctx *gin.Context) {
 func ChangeSignature(ctx *gin.Context) {
 	var personalSignature *string
 	personalSignature_, ok := ctx.GetPostForm("personal_signature")
+	personalSignature = &personalSignature_
 	// 允许用户把个性签名删除
 	if !ok {
 		personalSignature = nil

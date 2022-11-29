@@ -12,7 +12,8 @@ import (
 // 因为这个程序不会删除user, 因此不用额外检测rowsAffected, 之间检测
 // Exec的err就行
 func TryChangeSignature(userid int64, newSignature *string) bool {
-	_, err := dao.DB.Exec("UPDATE user SET personal_signature WHERE id = ?", userid)
+	_, err := dao.DB.Exec("UPDATE user SET personal_signature = ? WHERE id = ?", newSignature, userid)
+	println(newSignature)
 	if err != nil {
 		log.Printf("failed to Exec in TryChangeSignature: %v\n", err)
 		return false
