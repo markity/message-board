@@ -42,3 +42,13 @@ func CheckPersonalSignatureValid(sign string) bool {
 	nCount := utf8.RuneCountInString(sign)
 	return nCount <= 150
 }
+
+// 取值范围[1,50]
+func CheckEntryNumValid(entryNum int64) bool {
+	return entryNum >= 1 && entryNum <= 50
+}
+
+// 正整数
+func CheckPageNumValid(pageNum int64) bool {
+	return pageNum >= 1
+}
