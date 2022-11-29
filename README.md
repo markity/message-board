@@ -363,12 +363,12 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64U
 
 入参(form-data):
 
-| 键名     | entry_num       | page_num                      |
-| -------- | --------------- | ----------------------------- |
-| 类型     | int number      | int number                    |
-| 是否必填 | 是              | 是                            |
-| 参数要求 | 取值范围[1, 50] | 正整数                        |
-| 说明     | 指定一页的长度  | 1代表第一页, 最新的消息在前面 |
+| 键名     | entry_num                                    | page_num                      |
+| -------- | -------------------------------------------- | ----------------------------- |
+| 类型     | int number                                   | int number                    |
+| 是否必填 | 否                                           | 是                            |
+| 参数要求 | 取值范围[1, 50]                              | 正整数                        |
+| 说明     | 指定一页的长度, 如果<br />没有这一条, 默认10 | 1代表第一页, 最新的消息在前面 |
 
 出参(json):
 
@@ -385,7 +385,6 @@ messages例子:
   {
     message_id: 1,
     message_content: "你好, 这是一条留言",
-    sender_user_id: 3,
     sender_user_name: "Markity",
     created_at: "2004-01-19 12:31:43",
     thumbs_up: 0,
@@ -396,7 +395,7 @@ messages例子:
         message_content: "你好, 这又是一条留言",
         created_at: "2004-01-19 12:31:43",
         thumbs_up: 3,
-        # 当anonymous字段为true的时候, 该消息没有sender_user_id, sender_user_name字段
+        # 当anonymous字段为true的时候, 该消息没有sender_user_name字段
         anonymous: true,
         son_messages: nil
       }
@@ -477,7 +476,6 @@ message示例:
 {
   message_id: 1,
   message_content: "你好, 这是一条留言",
-  sender_user_id: 3,
   sender_user_name: "Markity",
   created_at: "2004-01-19 12:31:43",
   thumbs_up: 0,
@@ -488,7 +486,7 @@ message示例:
       message_content: "你好, 这又是一条留言",
       created_at: "2004-01-19 12:31:43",
       thumbs_up: 3,
-      # 当anonymous字段为true的时候, 该消息没有sender_user_id, sender_user_name字段
+      # 当anonymous字段为true的时候, 该消息没有sender_user_name字段
       anonymous: true,
       son_messages: nil
     }
