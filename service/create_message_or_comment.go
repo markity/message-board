@@ -88,8 +88,8 @@ func TryCreateComment(parentCommmentID int64, senderID int64, sonContent string,
 
 func RespNoSuchParentComment(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
-		ErrorCode: errorcodes.ErrorOKCode,
-		Msg:       errorcodes.ErrorOKMsg,
+		ErrorCode: errorcodes.ErrorNoSuchMessageEntryToCommentCode,
+		Msg:       errorcodes.ErrorNoSuchMessageEntryToCommentMsg,
 	}
 	ctx.JSON(http.StatusOK, &resp)
 }

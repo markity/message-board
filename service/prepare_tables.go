@@ -22,6 +22,11 @@ func MustResetTables() {
 		log.Panicf("failed to drop table thumb_message_user: %v\n", err)
 	}
 
+	_, err = dao.DB.Exec(dao.SentenceDropDistributedLock)
+	if err != nil {
+		log.Panicf("failed to drop table distributed_lock: %v\n", err)
+	}
+
 	// --------------建表--------------
 	_, err = dao.DB.Exec(dao.SentenceCreateUser)
 	if err != nil {

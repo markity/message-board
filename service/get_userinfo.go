@@ -54,14 +54,14 @@ func RespNoSuchUser(ctx *gin.Context) {
 
 type UserInfoResp struct {
 	errorcodes.BasicErrorResp
-	CreatedAt         time.Time `json:"created_at"`
-	Username          string    `json:"username"`
-	PersonalSignature *string   `json:"personal_sigature"`
+	CreatedAt         string  `json:"created_at"`
+	Username          string  `json:"username"`
+	PersonalSignature *string `json:"personal_sigature"`
 }
 
 func RespGetUserinfoOK(ctx *gin.Context, userInfo *UserInfo) {
 	uip := UserInfoResp{
-		CreatedAt:         userInfo.CreatedAt,
+		CreatedAt:         timeconvert.TimeToStr(userInfo.CreatedAt),
 		Username:          userInfo.Username,
 		PersonalSignature: userInfo.PersonalSignature,
 		BasicErrorResp: errorcodes.BasicErrorResp{

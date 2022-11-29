@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"message-board/service"
+	boolconvert "message-board/util/bool_convert"
 	"message-board/util/retry"
 	"strconv"
 	"time"
@@ -30,13 +31,10 @@ func CreateComment(ctx *gin.Context) {
 		anonymous = false
 	} else {
 		// 只接收false或true, 其它的值视为非法
-		if anonymousStr == "true" {
-			anonymous = true
-		} else if anonymousStr == "false" {
-			anonymous = false
-		} else {
+		var err error
+		anonymous, err = boolconvert.Atob(anonymousStr)
+		if err != nil {
 			service.RespInvalidParaError(ctx)
-			return
 		}
 	}
 
