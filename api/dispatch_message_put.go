@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log"
 	"message-board/service"
 	fieldcheck "message-board/util/field_check"
 	"message-board/util/retry"
@@ -68,18 +69,9 @@ func ChangeMessage(ctx *gin.Context) {
 	var hasPermission bool
 
 	ok = retry.RetryFrame(func() bool {
-		tx, ok := service.NewTX()
-		if !ok {
-			return false
-		}
-		queryOK, exist, editOK := service.TryEditMessage(tx, int64(msgid), userInfo.UserID, content, anonymous)
-		if !queryOK {
-			tx.Rollback()
-			return false
-		}
-
-		err := tx.Commit()
+		exist, editOK, err := service.TryEditMessage(int64(msgid), userInfo.UserID, content, anonymous)
 		if err != nil {
+			log.Printf("failed to TryEditMessage in ChangeMessage: %v\n", err)
 			return false
 		}
 

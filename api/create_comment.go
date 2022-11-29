@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log"
 	"message-board/service"
 	"message-board/util/retry"
 	"strconv"
@@ -45,21 +46,10 @@ func CreateComment(ctx *gin.Context) {
 	var lastInsertedCommentID int64
 
 	ok = retry.RetryFrame(func() bool {
-		tx, ok := service.NewTX()
-		if !ok {
-			// 开启事务开始, 重试
-			return false
-		}
-		queryOK, exist, lastInserted := service.TryCreateComment(tx, int64(msgid), userInfo.UserID, content, anonymous, time.Now())
-		if !queryOK {
-			// 一些意料之外的错误, 选择重试
-			tx.Rollback()
-			return false
-		}
-
-		// 提交事务失败也重试
-		err := tx.Commit()
+		exist, lastInserted, err := service.TryCreateComment(int64(msgid), userInfo.UserID, content, anonymous, time.Now())
 		if err != nil {
+			// 一些意料之外的错误, 选择重试
+			log.Printf("failed to TryCreateComment: %v\n", err)
 			return false
 		}
 

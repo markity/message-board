@@ -2,28 +2,51 @@ package service
 
 import (
 	"database/sql"
+	"log"
+	"message-board/dao"
 	errorcodes "message-board/util/error_codes"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-// 此函数用于尝试用userid以及oldpassword查询用户并锁住, 如果没找到, 那么说明密码错误, 返回nil, false
-// 如果出现其它错误, 返回error, false
-// 成功修改密码, 返回nil, true
-func TryChangePassword(tx *sql.Tx, userid int64, oldPasswordCrypto, newPasswordCrypto string) (error, bool) {
+// 此函数用于尝试用userid以及oldpassword查询用户并锁住, 如果没找到, 那么说明原密码错误, 返回nil, false
+// 如果error不为nil, 那么第一个返回值没有意义
+// 第一个返回值用于表示用户原密码是否正确, 修改密码操作是否成功
+func TryChangePassword(userid int64, oldPasswordCrypto, newPasswordCrypto string) (bool, error) {
+	tx, err := dao.DB.Begin()
+	if err != nil {
+		log.Printf("failed to Begin in TryChangePassword: %v\n", err)
+		return false, err
+	}
+
 	row := tx.QueryRow("SELECT id FROM user WHERE id = ? AND password_crypto = ? FOR UPDATE", userid, oldPasswordCrypto)
-	if row.Err() == sql.ErrNoRows {
-		return nil, false
+	var discard int64
+	err = row.Scan(&discard)
+	if err != nil {
+		tx.Rollback()
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		log.Printf("failed to QueryRow in TryEditMessage: %v", err)
+		return false, err
 	}
 
 	// 已经锁住, 现在可UPDATE
-	_, err := tx.Exec("UPDATE user SET password_crypto = ? WHERE id = ?", newPasswordCrypto, userid)
+	_, err = tx.Exec("UPDATE user SET password_crypto = ? WHERE id = ?", newPasswordCrypto, userid)
 	if err != nil {
-		return err, false
+		tx.Rollback()
+		log.Printf("failed to Exec in TryChangePassword: %v\n", err)
+		return false, err
 	}
 
-	return nil, true
+	err = tx.Commit()
+	if err != nil {
+		log.Printf("failed to Commit in TryChangePassword: %v\n", err)
+		return false, err
+	}
+
+	return true, nil
 }
 
 // 修改密码成功

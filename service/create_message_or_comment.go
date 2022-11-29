@@ -41,35 +41,49 @@ func TryCreateTopMessage(userid int64, content string, anonymous bool) (bool, in
 	return true, lastInserted
 }
 
-// 先锁住父评论, 然后插入子评论
-// 第一个bool指示是否重试, 第二个bool指示操作是否成功
-// 如果parentID的父评论不存在, 则返回true, false
-// 如果插入成功, 则返回true, true
-// 出现任何其它错误, 如网络错误, 返回false, false, 上层应回滚事务
-func TryCreateComment(tx *sql.Tx, parentID int64, senderID int64,
-	sonContent string, annoymous bool, createdAt time.Time) (bool, bool, int64) {
-	// 先锁住父评论, 然后再插入加子评论
-	row := tx.QueryRow("SELECT id FROM message WHERE id = ? FOR UPDATE", parentID)
-	var discard int64
-	err := row.Scan(&discard)
+// error代表意料之外的错误, 比如网络错误等
+// 当error != nil 时, 前两个返回值没有意义, 当error == nil 但 bool == false时, int64返回值没有意义
+// 第一个bool代表是否存在父评论, 如果不存在返回false, 此时当然插入失败, 第二个参数为0(没有意义)
+// 如果bool值返回的true, 则代表存在父评论且插入成功, 此时第二个参数是插入对象的id
+//		(也就是说只有第一个返回值为true时, 第二个参数才有意义)
+func TryCreateComment(parentCommmentID int64, senderID int64, sonContent string,
+	annoymous bool, createdAt time.Time) (bool, int64, error) {
+	tx, err := dao.DB.Begin()
 	if err != nil {
+		log.Printf("failed to Begin in TryCreateComment: %v\n", err)
+		return false, 0, err
+	}
+
+	// 先锁住父评论, 然后再插入加子评论
+	row := tx.QueryRow("SELECT id FROM message WHERE id = ? FOR UPDATE", parentCommmentID)
+	var discard int64
+	err = row.Scan(&discard)
+	if err != nil {
+		tx.Rollback()
 		if err == sql.ErrNoRows {
-			return true, false, 0
+			return false, 0, nil
 		}
 		log.Printf("failed to QueryRow in TryCreateComment: %v\n", err)
-		return false, false, 0
+		return false, 0, err
 	}
 
 	// 存在该评论, 执行插入
 	result, err := tx.Exec("INSERT INTO message(content, sender_user_id, parent_message_id, created_at, anonymous) VALUES(?,?,?,?,?)",
-		sonContent, senderID, parentID, timeconvert.TimeToStr(createdAt), annoymous)
+		sonContent, senderID, parentCommmentID, timeconvert.TimeToStr(createdAt), annoymous)
 	if err != nil {
 		log.Printf("failed to Exec in TryCreateComment: %v\n", err)
-		return false, false, 0
+		tx.Rollback()
+		return false, 0, err
 	}
 	lastInserted, _ := result.LastInsertId()
 
-	return true, true, lastInserted
+	err = tx.Commit()
+	if err != nil {
+		log.Printf("failed to Commit in TryCreateComment: %v\n", err)
+		return false, lastInserted, err
+	}
+
+	return true, lastInserted, nil
 }
 
 func RespNoSuchParentComment(ctx *gin.Context) {

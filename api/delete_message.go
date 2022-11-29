@@ -23,21 +23,10 @@ func DeleteMessage(ctx *gin.Context) {
 	var hasPermission bool
 
 	ok := retry.RetryFrame(func() bool {
-		tx, ok := service.NewTX()
-		if !ok {
-			return false
-		}
-
 		// 当条目存在确ok == false时, 原因是没有权限
-		queryOK, exist, ok := service.TryDeleteMessage(tx, int64(msgid), userInfo.UserID, userInfo.Admin)
-		if !queryOK {
-			tx.Rollback()
-			return false
-		}
-
-		err := tx.Commit()
+		exist, ok, err := service.TryDeleteMessage(int64(msgid), userInfo.UserID, userInfo.Admin)
 		if err != nil {
-			log.Printf("failed to commit: %v\n", err)
+			log.Printf("failed to TryDeleteMessage in DeleteMessage: %v\n", err)
 			return false
 		}
 

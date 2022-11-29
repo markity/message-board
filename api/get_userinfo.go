@@ -26,6 +26,7 @@ func GetUserinfo(ctx *gin.Context) {
 			exist = true
 			userInfo = ui
 		}
+
 		return true
 	}, 3)
 

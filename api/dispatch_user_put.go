@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log"
 	"message-board/service"
 	fieldcheck "message-board/util/field_check"
 	"message-board/util/md5"
@@ -67,17 +68,10 @@ func ChangePassword(ctx *gin.Context) {
 
 	// ok, 进行修改密码的数据库操作
 	ok = retry.RetryFrame(func() bool {
-		tx, ok := service.NewTX()
-		if !ok {
-			// 新建事务失败, 重试
-			return false
-		}
-
-		err, ok := service.TryChangePassword(tx, ctxUser.UserID,
+		ok, err := service.TryChangePassword(ctxUser.UserID,
 			string(md5.ToMD5(oldPassword)), string(md5.ToMD5(password)))
 		if err != nil {
-			// 意料之外的错误, 比如网络错误, 重试
-			tx.Rollback()
+			log.Printf("failed to TryChangePassword in ChangePassword: %v\n", err)
 			return false
 		}
 
@@ -87,10 +81,8 @@ func ChangePassword(ctx *gin.Context) {
 			oldPasswordOK = false
 		}
 
-		err = tx.Commit()
-
-		// 是否城市取决于commit是否成功
-		return err == nil
+		// 不再重试
+		return true
 	}, 3)
 
 	if !ok {
