@@ -14,12 +14,12 @@ import (
 func CreateUser(ctx *gin.Context) {
 	username, ok := ctx.GetPostForm("username")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 	password, ok := ctx.GetPostForm("password")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
@@ -29,7 +29,7 @@ func CreateUser(ctx *gin.Context) {
 		personalSignature = nil
 	} else {
 		if !fieldcheck.CheckPersonalSignatureValid(personalSignature_) {
-			service.InvalidParaError(ctx)
+			service.RespInvalidParaError(ctx)
 			return
 		}
 		if personalSignature_ == "" {
@@ -40,7 +40,7 @@ func CreateUser(ctx *gin.Context) {
 	}
 
 	if !fieldcheck.CheckUsernameValid(username) || !fieldcheck.CheckPasswordValid(password) {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
@@ -68,14 +68,15 @@ func CreateUser(ctx *gin.Context) {
 
 	// 尝试三次均失败, 告知用户目前服务不可用
 	if !ok {
-		service.ServiceNotAvailabelError(ctx)
+		service.RespServiceNotAvailabelError(ctx)
 		return
 	}
 
 	if isAlreadyRegistered {
 		// 告知用户该用户名已被占用
-		service.UsernameOccupied(ctx)
-	} else {
-		service.CreateUserOK(ctx)
+		service.RespUsernameOccupied(ctx)
+		return
 	}
+
+	service.RespCreateUserOK(ctx)
 }

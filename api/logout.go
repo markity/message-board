@@ -8,5 +8,5 @@ import (
 
 func Logout(ctx *gin.Context) {
 	ctx.SetCookie("authtoken", "", -1, "/", "localhost", false, false)
-	service.UserLoginSuccess(ctx)
+	service.RespUserLogoutOK(ctx)
 }

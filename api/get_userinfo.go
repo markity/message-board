@@ -30,14 +30,14 @@ func GetUserinfo(ctx *gin.Context) {
 	}, 3)
 
 	if !ok {
-		service.ServiceNotAvailabelError(ctx)
+		service.RespServiceNotAvailabelError(ctx)
 		return
 	}
 
 	if !exist {
-		service.NoSuchUser(ctx)
+		service.RespNoSuchUser(ctx)
 		return
 	}
 
-	service.ReturnUserinfo(ctx, userInfo)
+	service.RespGetUserinfoOK(ctx, userInfo)
 }

@@ -46,16 +46,16 @@ func TryCheckLoginInfo(username string, passwordCrypto []byte) (bool, bool, int6
 }
 
 // 用户登录失败, 可能是账户或密码错误
-func UserLoginInfoWrong(ctx *gin.Context) {
+func RespUserLoginInfoWrong(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorUserInfoWrongCode,
-		Msg:       errorcodes.ErrorrUserInfoWrongMsg,
+		Msg:       errorcodes.ErrorUserInfoWrongMsg,
 	}
 	ctx.JSON(http.StatusOK, &resp)
 }
 
 // 登录成功
-func UserLoginSuccess(ctx *gin.Context) {
+func RespUserLoginOK(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorOKCode,
 		Msg:       errorcodes.ErrorOKMsg,

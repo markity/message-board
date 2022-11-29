@@ -35,7 +35,7 @@ func TryCreateUser(username string, passwordCrypto []byte, personalSignature *st
 }
 
 // 告知用户该用户名已被占用
-func UsernameOccupied(ctx *gin.Context) {
+func RespUsernameOccupied(ctx *gin.Context) {
 	respStruct := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorUsernameOccupiedCode,
 		Msg:       errorcodes.ErrorUsernameOccupiedMsg,
@@ -45,7 +45,7 @@ func UsernameOccupied(ctx *gin.Context) {
 }
 
 // 告知用户创建用户成功
-func CreateUserOK(ctx *gin.Context) {
+func RespCreateUserOK(ctx *gin.Context) {
 	respStruct := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorOKCode,
 		Msg:       errorcodes.ErrorOKMsg,

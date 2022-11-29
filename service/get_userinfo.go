@@ -43,7 +43,7 @@ func TryGetUserinfo(username string) (bool, *UserInfo) {
 	return true, &ui
 }
 
-func NoSuchUser(ctx *gin.Context) {
+func RespNoSuchUser(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorNoSuchUserCode,
 		Msg:       errorcodes.ErrorNoSuchUserMsg,
@@ -59,7 +59,7 @@ type UserInfoResp struct {
 	PersonalSignature *string   `json:"personal_sigature"`
 }
 
-func ReturnUserinfo(ctx *gin.Context, userInfo *UserInfo) {
+func RespGetUserinfoOK(ctx *gin.Context, userInfo *UserInfo) {
 	uip := UserInfoResp{
 		CreatedAt:         userInfo.CreatedAt,
 		Username:          userInfo.Username,

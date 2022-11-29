@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserLoginoutSuccess(ctx *gin.Context) {
+func RespUserLogoutOK(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorOKCode,
 		Msg:       errorcodes.ErrorOKMsg,

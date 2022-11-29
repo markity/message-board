@@ -27,7 +27,7 @@ func TryChangePassword(tx *sql.Tx, userid int64, oldPasswordCrypto, newPasswordC
 }
 
 // 修改密码成功
-func ChangePasswordOK(ctx *gin.Context) {
+func RespChangePasswordOK(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorOKCode,
 		Msg:       errorcodes.ErrorOKMsg,
@@ -36,7 +36,7 @@ func ChangePasswordOK(ctx *gin.Context) {
 }
 
 // 原密码错误
-func OldPasswordWrong(ctx *gin.Context) {
+func RespOldPasswordWrong(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorWrongFormerPasswordCode,
 		Msg:       errorcodes.ErrorWrongFormerPasswordMsg,

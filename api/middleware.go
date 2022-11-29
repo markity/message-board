@@ -25,7 +25,7 @@ func MiddleWareJWTVerify(ctx *gin.Context) {
 	jwtStr, err := ctx.Cookie("authtoken")
 	if err != nil {
 		// 未鉴权的错误
-		service.JWTError(ctx)
+		service.RespJWTError(ctx)
 		ctx.Abort()
 		return
 	}
@@ -33,7 +33,7 @@ func MiddleWareJWTVerify(ctx *gin.Context) {
 	valid, payload := JwtSignaturer.CheckAndUnpackPayload(jwtStr)
 	if !valid {
 		// 未鉴权的错误
-		service.JWTError(ctx)
+		service.RespJWTError(ctx)
 		ctx.Abort()
 		return
 	}

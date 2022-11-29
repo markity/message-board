@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"log"
-	"message-board/dao"
 	errorcodes "message-board/util/error_codes"
 	"net/http"
 
@@ -15,7 +14,7 @@ import (
 // 第三个bool表示是否删除成功
 func TryDeleteMessage(tx *sql.Tx, msgid int64, currentUserid int64, admin bool) (bool, bool, bool) {
 	// 先上锁, 然后再删除
-	row := dao.DB.QueryRow("SELECT sender_user_id  FROM message WHERE id = ? AND deleted = 0 FOR UPDATE", msgid)
+	row := tx.QueryRow("SELECT sender_user_id  FROM message WHERE id = ? AND deleted = 0 FOR UPDATE", msgid)
 
 	var senderUserID int64
 	err := row.Scan(&senderUserID)
@@ -33,7 +32,7 @@ func TryDeleteMessage(tx *sql.Tx, msgid int64, currentUserid int64, admin bool) 
 	}
 
 	// 已经上锁, 执行删除操作
-	_, err = dao.DB.Exec("UPDATE message SET deleted = 1 WHERE id = ?", msgid)
+	_, err = tx.Exec("UPDATE message SET deleted = 1 WHERE id = ?", msgid)
 	if err != nil {
 		log.Printf("failed to Exec in TryDeleteMessage: %v\n", err)
 		return false, false, false
@@ -43,16 +42,16 @@ func TryDeleteMessage(tx *sql.Tx, msgid int64, currentUserid int64, admin bool) 
 	return true, true, true
 }
 
-func NoSuchMessageEntry(ctx *gin.Context) {
+func RespNoSuchMessageEntryToDelete(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
-		ErrorCode: errorcodes.ErrorNoSuchEntryCode,
-		Msg:       errorcodes.ErrorNoSuchEntryMsg,
+		ErrorCode: errorcodes.ErrorNoSuchMessageEntryToDeleteCode,
+		Msg:       errorcodes.ErrorNoSuchMessageEntryToDeleteMsg,
 	}
 
 	ctx.JSON(http.StatusOK, &resp)
 }
 
-func DeletedOK(ctx *gin.Context) {
+func RespDeletedOK(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorOKCode,
 		Msg:       errorcodes.ErrorOKMsg,
@@ -61,10 +60,10 @@ func DeletedOK(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, &resp)
 }
 
-func NoDeletePermission(ctx *gin.Context) {
+func RespNoDeletePermission(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
-		ErrorCode: errorcodes.ErrorNoPermissionCode,
-		Msg:       errorcodes.ErrorNoPermissionMsg,
+		ErrorCode: errorcodes.ErrorNoPermissionToDeleteCode,
+		Msg:       errorcodes.ErrorNoPermissionToDeleteMsg,
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

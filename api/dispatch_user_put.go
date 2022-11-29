@@ -13,7 +13,7 @@ import (
 func DispatchUserPut(ctx *gin.Context) {
 	putType, ok := ctx.GetPostForm("put_type")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
@@ -26,7 +26,7 @@ func DispatchUserPut(ctx *gin.Context) {
 		ChangeSignature(ctx)
 	default:
 		// 不合法的put_type
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 }
@@ -36,28 +36,28 @@ func ChangePassword(ctx *gin.Context) {
 	// 一些基本form-data的获取以及格式检查, 检查完了再查库, 减少数据库的压力
 	oldPassword, ok := ctx.GetPostForm("old_password")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
 	password, ok := ctx.GetPostForm("password")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 	if !fieldcheck.CheckPasswordValid(password) {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
 	passwordVerify, ok := ctx.GetPostForm("password_verify")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
 	if password != passwordVerify {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
@@ -94,15 +94,16 @@ func ChangePassword(ctx *gin.Context) {
 	}, 3)
 
 	if !ok {
-		service.ServiceNotAvailabelError(ctx)
+		service.RespServiceNotAvailabelError(ctx)
 		return
 	}
 
 	if !oldPasswordOK {
-		service.OldPasswordWrong(ctx)
-	} else {
-		service.ChangePasswordOK(ctx)
+		service.RespOldPasswordWrong(ctx)
+		return
 	}
+
+	service.RespChangePasswordOK(ctx)
 }
 
 // 修改签名
@@ -117,7 +118,7 @@ func ChangeSignature(ctx *gin.Context) {
 			personalSignature = nil
 		} else {
 			if !fieldcheck.CheckPersonalSignatureValid(personalSignature_) {
-				service.InvalidParaError(ctx)
+				service.RespInvalidParaError(ctx)
 				return
 			}
 		}
@@ -137,8 +138,9 @@ func ChangeSignature(ctx *gin.Context) {
 	}, 3)
 
 	if !ok {
-		service.ServiceNotAvailabelError(ctx)
-	} else {
-		service.ChangeSignatrueOK(ctx)
+		service.RespServiceNotAvailabelError(ctx)
+		return
 	}
+
+	service.RespChangeSignatrueOK(ctx)
 }

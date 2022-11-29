@@ -13,7 +13,7 @@ func DeleteMessage(ctx *gin.Context) {
 	msgidStr := ctx.Param("msgid")
 	msgid, err := strconv.ParseUint(msgidStr, 10, 64)
 	if err != nil {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
@@ -47,19 +47,19 @@ func DeleteMessage(ctx *gin.Context) {
 	}, 3)
 
 	if !ok {
-		service.ServiceNotAvailabelError(ctx)
+		service.RespServiceNotAvailabelError(ctx)
 		return
 	}
 
 	if !entryExist {
-		service.NoSuchMessageEntry(ctx)
+		service.RespNoSuchMessageEntryToDelete(ctx)
 		return
 	}
 
 	if !hasPermission {
-		service.NoDeletePermission(ctx)
+		service.RespNoDeletePermission(ctx)
 		return
 	}
 
-	service.DeletedOK(ctx)
+	service.RespDeletedOK(ctx)
 }

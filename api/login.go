@@ -14,20 +14,20 @@ func Login(ctx *gin.Context) {
 	// 进行基本检查
 	username, ok := ctx.GetPostForm("username")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 	if !fieldcheck.CheckUsernameValid(username) {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 	password, ok := ctx.GetPostForm("password")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 	if !fieldcheck.CheckPasswordValid(password) {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
@@ -51,12 +51,12 @@ func Login(ctx *gin.Context) {
 	}, 3)
 
 	if !ok {
-		service.ServiceNotAvailabelError(ctx)
+		service.RespServiceNotAvailabelError(ctx)
 		return
 	}
 
 	if !loginOK {
-		service.UserLoginInfoWrong(ctx)
+		service.RespUserLoginInfoWrong(ctx)
 		return
 	}
 
@@ -64,5 +64,5 @@ func Login(ctx *gin.Context) {
 	jwt := JwtSignaturer.Signature(userID, userAdmin, time.Hour*2)
 	ctx.SetCookie("authtoken", jwt, 7200, "/", "localhost", false, false)
 
-	service.UserLoginSuccess(ctx)
+	service.RespUserLoginOK(ctx)
 }

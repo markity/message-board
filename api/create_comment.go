@@ -2,9 +2,7 @@ package api
 
 import (
 	"message-board/service"
-	errorcodes "message-board/util/error_codes"
 	"message-board/util/retry"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -15,13 +13,13 @@ func CreateComment(ctx *gin.Context) {
 	msgidStr := ctx.Param("msgid")
 	msgid, err := strconv.ParseUint(msgidStr, 10, 64)
 	if err != nil {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
 	content, ok := ctx.GetPostForm("content")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
@@ -36,7 +34,7 @@ func CreateComment(ctx *gin.Context) {
 		} else if anonymousStr == "false" {
 			anonymous = false
 		} else {
-			service.InvalidParaError(ctx)
+			service.RespInvalidParaError(ctx)
 			return
 		}
 	}
@@ -72,23 +70,16 @@ func CreateComment(ctx *gin.Context) {
 	}, 3)
 
 	if !ok {
-		service.ServiceNotAvailabelError(ctx)
+		service.RespServiceNotAvailabelError(ctx)
 		return
 	}
 
 	// 没有这条父消息
 	if !parentEntryExist {
-		service.NoSuchParentComment(ctx)
+		service.RespNoSuchParentComment(ctx)
 		return
 	}
 
 	// 成功发布
-	resp := service.MessageInsertedResp{
-		BasicErrorResp: errorcodes.BasicErrorResp{
-			ErrorCode: errorcodes.ErrorOKCode,
-			Msg:       errorcodes.ErrorOKMsg,
-		},
-		MessageID: lastInsertedCommentID,
-	}
-	ctx.JSON(http.StatusOK, &resp)
+	service.RespCreateMessageOrCommentOK(ctx, lastInsertedCommentID)
 }

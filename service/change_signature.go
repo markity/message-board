@@ -21,7 +21,7 @@ func TryChangeSignature(userid int64, newSignature *string) bool {
 }
 
 // 修改签名成功
-func ChangeSignatrueOK(ctx *gin.Context) {
+func RespChangeSignatrueOK(ctx *gin.Context) {
 	resp := errorcodes.BasicErrorResp{
 		ErrorCode: errorcodes.ErrorOKCode,
 		Msg:       errorcodes.ErrorOKMsg,

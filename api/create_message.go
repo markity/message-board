@@ -2,10 +2,8 @@ package api
 
 import (
 	"message-board/service"
-	errorcodes "message-board/util/error_codes"
 	fieldcheck "message-board/util/field_check"
 	"message-board/util/retry"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,11 +12,11 @@ func CreateMessage(ctx *gin.Context) {
 	// 基本检查
 	content, ok := ctx.GetPostForm("content")
 	if !ok {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 	if !fieldcheck.CheckMessageValid(content) {
-		service.InvalidParaError(ctx)
+		service.RespInvalidParaError(ctx)
 		return
 	}
 
@@ -33,7 +31,7 @@ func CreateMessage(ctx *gin.Context) {
 		} else if anoymousStr == "false" {
 			anonymous = false
 		} else {
-			service.InvalidParaError(ctx)
+			service.RespInvalidParaError(ctx)
 			return
 		}
 	}
@@ -55,17 +53,9 @@ func CreateMessage(ctx *gin.Context) {
 	}, 3)
 
 	if !ok {
-		service.ServiceNotAvailabelError(ctx)
+		service.RespServiceNotAvailabelError(ctx)
 		return
 	}
 
-	resp := service.MessageInsertedResp{
-		BasicErrorResp: errorcodes.BasicErrorResp{
-			ErrorCode: errorcodes.ErrorOKCode,
-			Msg:       errorcodes.ErrorOKMsg,
-		},
-		MessageID: insertedMessageID,
-	}
-
-	ctx.JSON(http.StatusOK, &resp)
+	service.RespCreateMessageOrCommentOK(ctx, insertedMessageID)
 }

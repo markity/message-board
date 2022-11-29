@@ -4,4 +4,4 @@ package errorcodes
 
 // 用户名或密码错误
 var ErrorUserInfoWrongCode = 20501
-var ErrorrUserInfoWrongMsg = "login failed, check password and username again"
+var ErrorUserInfoWrongMsg = "login failed, check password and username again"
