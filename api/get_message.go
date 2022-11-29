@@ -49,31 +49,34 @@ func GetMultipleMessages(ctx *gin.Context) {
 	// 获取基本参数, 以及一些基本检查
 
 	var entryNum int64
-
 	entryNumStr, ok := ctx.GetPostForm("entry_num")
 	if !ok {
 		// 没有此参数的时候, 默认值为10
-		entryNum = 20
-	}
-	entryNum, err := strconv.ParseInt(entryNumStr, 10, 32)
-	if err != nil {
-		service.RespInvalidParaError(ctx)
-		return
+		entryNum = 10
+	} else {
+		var err error
+		entryNum, err = strconv.ParseInt(entryNumStr, 10, 64)
+		if err != nil {
+			service.RespInvalidParaError(ctx)
+			return
+		}
 	}
 	if !fieldcheck.CheckEntryNumValid(entryNum) {
 		service.RespInvalidParaError(ctx)
 		return
 	}
 
+	var pageNum int64
 	pageNumStr, ok := ctx.GetPostForm("page_num")
 	if !ok {
-		service.RespInvalidParaError(ctx)
-		return
-	}
-	pageNum, err := strconv.ParseInt(pageNumStr, 10, 64)
-	if err != nil {
-		service.RespInvalidParaError(ctx)
-		return
+		pageNum = 1
+	} else {
+		var err error
+		pageNum, err = strconv.ParseInt(pageNumStr, 10, 64)
+		if err != nil {
+			service.RespInvalidParaError(ctx)
+			return
+		}
 	}
 	if !fieldcheck.CheckPageNumValid(pageNum) {
 		service.RespInvalidParaError(ctx)

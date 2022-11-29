@@ -4,6 +4,7 @@ import (
 	"log"
 	"message-board/service"
 	boolconvert "message-board/util/bool_convert"
+	fieldcheck "message-board/util/field_check"
 	"message-board/util/retry"
 	"strconv"
 	"time"
@@ -21,6 +22,10 @@ func CreateComment(ctx *gin.Context) {
 
 	content, ok := ctx.GetPostForm("content")
 	if !ok {
+		service.RespInvalidParaError(ctx)
+		return
+	}
+	if !fieldcheck.CheckMessageValid(content) {
 		service.RespInvalidParaError(ctx)
 		return
 	}

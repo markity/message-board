@@ -174,7 +174,7 @@ func TryGetMultipleMessages(entryNum int64, pageNum int64) ([](*Message), error)
 	WHERE 	message.deleted = 0 
 			AND
 			message.parent_message_id IS NULL
-	ORDER BY message.id ASC
+	ORDER BY message.id DESC
 	LIMIT ?,?
 	`
 	rows, err := tx.Query(query, (pageNum-1)*entryNum, entryNum)
