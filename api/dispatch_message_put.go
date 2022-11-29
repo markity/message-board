@@ -22,7 +22,7 @@ func DispatchMessagePut(ctx *gin.Context) {
 		ChangeMessage(ctx)
 		return
 	case "thumb_up":
-		// ThumbUpMessage(ctx)
+		ThumbUpMessage(ctx)
 	default:
 		service.RespInvalidParaError(ctx)
 		return
@@ -98,13 +98,42 @@ func ChangeMessage(ctx *gin.Context) {
 	service.RespEditMessageEntryOK(ctx)
 }
 
-// // put_type = thumb_up
-// func ThumbUpMessage(ctx *gin.Context) {
-// 	msgidStr := ctx.Param("msgid")
-// 	msgid, err := strconv.ParseUint(msgidStr, 10, 64)
-// 	if err != nil {
-// 		service.InvalidParaError(ctx)
-// 		return
-// 	}
+// put_type = thumb_up
+func ThumbUpMessage(ctx *gin.Context) {
+	msgidStr := ctx.Param("msgid")
+	msgid, err := strconv.ParseUint(msgidStr, 10, 64)
+	if err != nil {
+		service.RespInvalidParaError(ctx)
+		return
+	}
 
-// }
+	userInfo_, _ := ctx.Get("user")
+	userInfo := userInfo_.(*UserAuthInfo)
+
+	var messageEntryExist bool
+	var thumbUpOK bool
+
+	retry.RetryFrame(func() bool {
+		exist, ok, err := service.TryThumbUpMessage(userInfo.UserID, int64(msgid))
+		if err != nil {
+			log.Printf("failed to TryThumbUpMessage in ThumbUpMessage: %v\n", err)
+			return false
+		}
+
+		messageEntryExist = exist
+		thumbUpOK = ok
+		return true
+	}, 3)
+
+	if !messageEntryExist {
+		service.RespNoSuchMessageEntryToThumbUp(ctx)
+		return
+	}
+
+	if !thumbUpOK {
+		service.RespYouAlreadyLikedIt(ctx)
+		return
+	}
+
+	service.RespThumbUpMessageOK(ctx)
+}
