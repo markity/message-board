@@ -11,6 +11,5 @@ func InitGroup(engine *gin.Engine) {
 	engine.POST("/message", MiddleWareJWTVerify, CreateMessage)
 	engine.POST("/message/:msgid", MiddleWareJWTVerify, CreateComment)
 	engine.DELETE("/message/:msgid", MiddleWareJWTVerify, DeleteMessage)
-	// engine.PUT("/message/:msgid", MiddleWareJWTVerify, ChangeMessage)
-	// engine.Delims("/message/:msgid", MiddleWareJWTVerify, )
+	engine.PUT("/message/:msgid", MiddleWareJWTVerify, DispatchMessagePut)
 }
