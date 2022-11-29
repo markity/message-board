@@ -1,6 +1,9 @@
 package boolconvert
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 func BoolToString(b bool) string {
 	if b {
@@ -24,4 +27,15 @@ func BoolToInt(b bool) int {
 		return 1
 	}
 	return 0
+}
+
+func MustItob(a int) bool {
+	if a == 0 {
+		return false
+	} else if a == 1 {
+		return true
+	}
+
+	log.Panicf("invalid parameter: %v\n", a)
+	return false
 }

@@ -372,38 +372,42 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64U
 
 出参(json):
 
-| 键名     | error_code | msg      | comments                                                                                 |
+| 键名     | error_code | msg      | messages                                                                                 |
 | -------- | ---------- | -------- | ---------------------------------------------------------------------------------------- |
 | 类型     | int number | string   | array                                                                                    |
 | 是否必填 | 是         | 是       | 否                                                                                       |
 | 说明     | 错误码     | 错误信息 | 如果error_code不为20000, 就没有这个字段<br />, array的每一个子项都是树状的, 见下面的例子 |
 
-commets例子:
+messages例子:
 
 ```plaintext
 [
   {
-    comment_id: 1,
-    comment_content: "你好, 这是一条留言",
+    message_id: 1,
+    message_content: "你好, 这是一条留言",
     sender_user_id: 3,
     sender_user_name: "Markity",
     created_at: "2004-01-19 12:31:43",
     thumbs_up: 0,
-    anomonyous: false,
-    sonComments: [
+    anonymous: false,
+    son_messages: [
       {
-        comment_id: 2,
-        comment_content: "你好, 这又是一条留言",
+        message_id: 2,
+        message_content: "你好, 这又是一条留言",
         created_at: "2004-01-19 12:31:43",
         thumbs_up: 3,
-        # 当anomonyous字段为true的时候, 该消息没有sender_user_id, sender_user_name字段
-        anomonyous: true,
-        sonComments: []
+        # 当anonymous字段为true的时候, 该消息没有sender_user_id, sender_user_name字段
+        anonymous: true,
+        son_messages: nil
       }
     ]
   }, ...更多内容
 ]
 ```
+
+说明:
+
+- 当一条都没有的时候, 返回一个空的数组, 即为 `[]`
 
 可能的错误码:
 
@@ -461,32 +465,32 @@ commets例子:
 
 出参(json):
 
-| 键名     | error_code | msg      | comment                                                                         |
+| 键名     | error_code | msg      | message                                                                         |
 | -------- | ---------- | -------- | ------------------------------------------------------------------------------- |
 | 类型     | int number | string   | dict                                                                            |
 | 是否必填 | 是         | 是       | 否                                                                              |
 | 说明     | 错误码     | 错误信息 | 如果error_code不为20000, 就没有这<br />个字段, 这是一个树状的结构, 见下面的例子 |
 
-comment示例:
+message示例:
 
 ```plaintext
 {
-  comment_id: 1,
-  comment_content: "你好, 这是一条留言",
+  message_id: 1,
+  message_content: "你好, 这是一条留言",
   sender_user_id: 3,
   sender_user_name: "Markity",
   created_at: "2004-01-19 12:31:43",
   thumbs_up: 0,
-  anonyous: false,
-  sonComments: [
+  anonymous: false,
+  son_messages: [
     {
-      comment_id: 2,
-      comment_content: "你好, 这又是一条留言",
+      message_id: 2,
+      message_content: "你好, 这又是一条留言",
       created_at: "2004-01-19 12:31:43",
       thumbs_up: 3,
-      # 当anomonyous字段为true的时候, 该消息没有sender_user_id, sender_user_name字段
-      anomonyous: true,
-      sonComments: []
+      # 当anonymous字段为true的时候, 该消息没有sender_user_id, sender_user_name字段
+      anonymous: true,
+      son_messages: nil
     }
   ]
 }
