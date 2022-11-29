@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	service.MustPrepareTables()
+	service.MustResetTables()
 	engine := gin.Default()
 	api.InitGroup(engine)
 
