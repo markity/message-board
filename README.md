@@ -477,7 +477,7 @@ comment示例:
   sender_user_name: "Markity",
   created_at: "2004-01-19 12:31:43",
   thumbs_up: 0,
-  anomonyous: false,
+  anonyous: false,
   sonComments: [
     {
       comment_id: 2,
