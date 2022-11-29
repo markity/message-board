@@ -138,6 +138,16 @@ token = base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + base64U
 
 点赞的过程包括查询此表以及更新此表的过程, 这是一个查询后插入操作, 需要考虑并发下的数据不一致问题, 因此不给user_id和message_id加索引. 这样查询该表的之后事务会锁住这张表, 使之并发安全
 
+**distributed_lock**
+
+| 字段名 | id                          | tbname           |
+| ------ | --------------------------- | ---------------- |
+| 类型   | INT                         | VARCHAR(32)      |
+| 约束   | PRIMARY KEY, AUTO_INCREMENT | NOT NULL, UNIQUE |
+| 说明   | 主键                        | 表明             |
+
+为了实现事务级表锁, 需要锁表的操作都先从这个表里面拿锁
+
 ### 接口详述
 
 **统述**
