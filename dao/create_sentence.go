@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS user(
 	deleted 			TINYINT NOT NULL DEFAULT 0
 ) COMMENT '用户表'
 `
-
 var SentenceCreateMessage = `
 CREATE TABLE IF NOT EXISTS message(
 	id 					INT PRIMARY KEY AUTO_INCREMENT,
@@ -24,7 +23,6 @@ CREATE TABLE IF NOT EXISTS message(
 	deleted				TINYINT NOT NULL DEFAULT 0
 ) COMMENT '消息表, 存储顶级留言以及子评论'
 `
-
 var SentenceCreateThumbMessageUser = `
 CREATE TABLE IF NOT EXISTS thumb_message_user(
 	id 			INT PRIMARY KEY AUTO_INCREMENT,
@@ -32,3 +30,18 @@ CREATE TABLE IF NOT EXISTS thumb_message_user(
 	message_id 	INT NOT NULL
 ) COMMENT '建立user和message点赞的一对多关系'
 `
+
+var SentenceCreateDistributedLock = `
+CREATE TABLE IF NOT EXISTS distributed_lock(
+	id 			INT PRIMARY KEY AUTO_INCREMENT,
+	tbname		VARCHAR(32) unique NOT NULL
+) COMMENT '分布式表锁, 用于提供事务级的表锁, 主要是提供点赞中间表的数据一致性'
+`
+
+var SentenceDropUser = "DROP TABLE IF EXISTS user"
+var SentenceDropMessage = "DROP TABLE IF EXISTS message"
+var SentenceDropThumbMessageUser = "DROP TABLE IF EXISTS thumb_message_user"
+var SentenceDropDistributedLock = "DROP TABLE IF EXISTS distributed_lock"
+
+// 插入分布式表锁的必要信息, 现在规定1代表user表, 2代表message表, 3代表thumb_message_user表
+var SentenceInsertTableLock = "INSERT INTO distributed_lock(tbname) VALUES ('user'), ('message'), ('thumb_message_user')"
