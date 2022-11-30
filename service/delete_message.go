@@ -37,7 +37,7 @@ func TryDeleteMessage(msgid int64, currentUserid int64, admin bool) (bool, bool,
 	// 没有删除成功, 原因是用户没有权限
 	if senderUserID != currentUserid && !admin {
 		tx.Rollback()
-		return true, true, nil
+		return true, false, nil
 	}
 
 	// 已经上锁, 执行删除操作
